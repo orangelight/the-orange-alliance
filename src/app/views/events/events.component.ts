@@ -60,16 +60,28 @@ export class EventsComponent implements OnInit {
   organizeEventsByWeek(): void {
     this.weeks = [];
     let cur_week = null;
-    for (let event of this.events) {
-      if (event.week_key !== cur_week) {
-        this.weeks.push({
-          'week': event.week_key,
-          'start_date': event.start_date,
-          'end_date': event.end_date
-        });
-        cur_week = event.week_key;
+    let cur_start_date = null;
+    let cur_end_date = null;
+    this.events.forEach((event, index) => {
+      if (event.week_key !== cur_week || index == this.events.length) {
+        if(cur_week == null) {
+          cur_start_date = event.start_date;
+          cur_end_date = event.end_date;
+          cur_week =  event.week_key;
+        } else {
+          this.weeks.push({
+            'week': cur_week,
+            'start_date': cur_start_date,
+            'end_date': cur_end_date
+          });
+          cur_start_date = event.start_date;
+          cur_end_date = event.end_date;
+          cur_week =  event.week_key;
+        }
       }
-    }
+      if(event.start_date < cur_start_date) { cur_start_date = event.start_date; }
+      if(event.end_date > cur_end_date) { cur_end_date = event.end_date; }
+    });
   }
 
   getEventsByWeek(week: any): any {
